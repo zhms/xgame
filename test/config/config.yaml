@@ -1,0 +1,9 @@
+server:
+  project: 'test'
+  id: 1
+  env: dev
+redis:
+  host: 127.0.0.1
+  port: 6379
+  db: 0
+  password: Bo5zcd*2ozsvtjss0
