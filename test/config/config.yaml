@@ -2,8 +2,47 @@ server:
   project: 'test'
   id: 1
   env: dev
-redis:
+http:
+  port: 2342
+consul:
+  host: 127.0.0.1
+  port: 8500
+event_redis:
   host: 127.0.0.1
   port: 6379
   db: 0
   password: Bo5zcd*2ozsvtjss0
+game_redis:
+  host: 127.0.0.1
+  port: 6379
+  db: 0
+  password: Bo5zcd*2ozsvtjss0
+order_redis:
+  host: 127.0.0.1
+  port: 6379
+  db: 0
+  password: Bo5zcd*2ozsvtjss0
+game_db:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: Bo5zcd*2ozsvtjss0
+  database: x_game
+order_db:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: Bo5zcd*2ozsvtjss0
+  database: x_game_order
+game_db_readonly:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: Bo5zcd*2ozsvtjss0
+  database: x_game
+order_db_readonly:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: Bo5zcd*2ozsvtjss0
+  database: x_game_order

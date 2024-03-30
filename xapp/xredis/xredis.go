@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"strings"
 	"sync"
-	"time"
 	"xapp/xutils"
 
 	"github.com/beego/beego/logs"
@@ -56,17 +55,6 @@ func (this *XRedis) Init(cfgname string) {
 		MaxIdleConns: maxidle,
 	})
 	logs.Debug("连接redis 成功:", host, port, db, cfgname)
-	go func() {
-		s := this.client.Subscribe(context.Background(), "xapp")
-		for msg := range s.Channel() {
-			logs.Debug("redis sub:", msg.Channel, msg.Payload)
-		}
-	}()
-
-	go func() {
-		time.Sleep(time.Second)
-		this.client.Publish(context.Background(), "xapp", "hello")
-	}()
 }
 
 func (this *XRedis) Close() {

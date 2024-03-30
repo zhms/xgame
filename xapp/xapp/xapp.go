@@ -17,8 +17,10 @@ import (
 	"syscall"
 	"time"
 	"xapp/xdb"
-	"xapp/xdb/game/query"
 	"xapp/xredis"
+
+	"xapp/xdb/game_query"
+	"xapp/xdb/order_query"
 
 	"github.com/beego/beego/logs"
 	"github.com/gin-gonic/gin"
@@ -44,12 +46,23 @@ var ApiV7 *gin.RouterGroup
 var ApiV8 *gin.RouterGroup
 var ApiV9 *gin.RouterGroup
 
-var db *xdb.XDb = new(xdb.XDb)
-var redis *xredis.XRedis = new(xredis.XRedis)
-var db_query *query.Query
+var game_db *xdb.XDb = new(xdb.XDb)
+var gquery *game_query.Query
+
+var game_db_readonly *xdb.XDb = new(xdb.XDb)
+var gquery_readonly *game_query.Query
+
+var order_db *xdb.XDb = new(xdb.XDb)
+var oquery *order_query.Query
+
+var order_db_readonly *xdb.XDb = new(xdb.XDb)
+var oquery_readonly *order_query.Query
+
+var order_redis *xredis.XRedis = new(xredis.XRedis)
+var game_redis *xredis.XRedis = new(xredis.XRedis)
+var event_redis *xredis.XRedis = new(xredis.XRedis)
 
 func IsEnvPrd() bool {
-
 	return strings.Contains(env, "prd")
 }
 
@@ -192,13 +205,32 @@ func Init() {
 		router.GET("/consul", func(c *gin.Context) {
 			c.String(200, "ok")
 		})
+		logs.Debug("register to consul success", config.Address)
 	}
-	if viper.GetString("db.user") != "" {
-		db.Init("db")
-		db_query = query.Use(db.Gorm())
+	if viper.GetString("game_db.host") != "" {
+		game_db.Init("game_db")
+		gquery = game_query.Use(game_db.Gorm())
 	}
-	if viper.GetString("redis.host") != "" {
-		redis.Init("redis")
+	if viper.GetString("game_db_readonly.host") != "" {
+		game_db_readonly.Init("game_db_readonly")
+		gquery_readonly = game_query.Use(game_db_readonly.Gorm())
+	}
+	if viper.GetString("order_db.host") != "" {
+		order_db.Init("order_db")
+		oquery = order_query.Use(order_db.Gorm())
+	}
+	if viper.GetString("order_db_readonly.host") != "" {
+		order_db_readonly.Init("order_db_readonly")
+		oquery_readonly = order_query.Use(order_db_readonly.Gorm())
+	}
+	if viper.GetString("event_redis.host") != "" {
+		event_redis.Init("event_redis")
+	}
+	if viper.GetString("game_redis.host") != "" {
+		game_redis.Init("game_redis")
+	}
+	if viper.GetString("order_redis.host") != "" {
+		order_redis.Init("order_redis")
 	}
 }
 
@@ -228,8 +260,10 @@ func Run(callback func()) {
 	{
 		go func() {
 			port := viper.GetString("http.port")
-			logs.Debug("start server at port: ", port)
-			router.Run(":" + port)
+			if port != "" {
+				logs.Debug("start server at port: ", port)
+				router.Run(":" + port)
+			}
 		}()
 	}
 	time.Sleep(time.Microsecond * 100)
@@ -252,14 +286,38 @@ func Run(callback func()) {
 	logs.Debug("****************server exit****************")
 }
 
-func Db() *gorm.DB {
-	return db.Gorm()
+func GameDb() *gorm.DB {
+	return game_db.Gorm()
 }
 
-func DbQuery() *query.Query {
-	return db_query
+func GameQuery() *game_query.Query {
+	return gquery
 }
 
-func Redis() *xredis.XRedis {
-	return redis
+func GameQueryReadOnly() *game_query.Query {
+	return gquery_readonly
+}
+
+func OrderDb() *gorm.DB {
+	return game_db.Gorm()
+}
+
+func OrderQuery() *order_query.Query {
+	return oquery
+}
+
+func OrderQueryReadOnly() *order_query.Query {
+	return oquery_readonly
+}
+
+func GameRedis() *xredis.XRedis {
+	return game_redis
+}
+
+func OrderRedis() *xredis.XRedis {
+	return game_redis
+}
+
+func EventRedis() *xredis.XRedis {
+	return event_redis
 }

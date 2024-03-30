@@ -15,8 +15,8 @@ func BuildGameGen() {
 		panic(fmt.Errorf("connect db fail: %w", err))
 	}
 	g := gen.NewGenerator(gen.Config{
-		OutPath:      "xdb/game/query",
-		ModelPkgPath: "model",
+		OutPath:      "xdb/game_query",
+		ModelPkgPath: "game_model",
 		Mode:         gen.WithDefaultQuery | gen.WithQueryInterface | gen.WithoutContext,
 	})
 	g.UseDB(db)
@@ -31,8 +31,8 @@ func BuildOrderGen() {
 		panic(fmt.Errorf("connect db fail: %w", err))
 	}
 	g := gen.NewGenerator(gen.Config{
-		OutPath:      "xdb/order/query",
-		ModelPkgPath: "model",
+		OutPath:      "xdb/order_query",
+		ModelPkgPath: "order_model",
 		Mode:         gen.WithDefaultQuery | gen.WithQueryInterface | gen.WithoutContext,
 	})
 	g.UseDB(db)
